@@ -79,9 +79,8 @@ function gruntApp (grunt)
 			var src = value.source  || "";
 			var ctx = value.context || {};
 
-			if (value.layout)
-				// Check for a layout value
-				ctx.layout = value.layout;
+			// Resolve source path
+			src = path.resolve (src);
 
 			// Expand if context is a file
 			if (typeof ctx === "string")
@@ -95,6 +94,15 @@ function gruntApp (grunt)
 			// Verify context is an object
 			if (typeof ctx !== "object")
 				grunt.warn ("Context must be a path to a context or an object");
+
+			ctx.layout = typeof
+				// Handle the override layout
+				value.layout === "undefined" ?
+				options.layout : value.layout;
+
+			ctx.layout = ctx.layout ?
+				// Resolve layout path, if available
+				path.resolve (ctx.layout) : false;
 
 			// Compile the current file
 			compile (options, src, ctx,
@@ -151,12 +159,13 @@ function gruntApp (grunt)
 			var v = options.partials[i];
 
 			// Expand if value is a file
-			if (grunt.file.isFile (v))
+			if (typeof v === "string" &&
+				grunt.file.isFile (v))
 				v = grunt.file.read (v);
 
 			// Verify value is a string
 			if (typeof v !== "string")
-				grunt.warn ("Partials must be a path to a partial or an html string");
+				grunt.warn ("Partials must be a path to a partial or a string");
 
 			// Store current value
 			options.partials[i] = v;
@@ -209,16 +218,6 @@ function gruntApp (grunt)
 		ctx.settings = ctx.settings || { };
 		// Ignore the views path
 		ctx.settings.views = "";
-
-		// Select either a local or global layout
-		ctx.layout = ctx.layout || options.layout;
-
-		if (ctx.layout)
-			// Resolve layout path, if available
-			ctx.layout = path.resolve (ctx.layout);
-
-		// Resolve source path
-		src = path.resolve (src);
 
 		// Simulate an express rendering call
 		instance.__express (src, ctx, callback);

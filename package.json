@@ -1,6 +1,6 @@
 {
 	"name"				: "grunt-static-hbs",
-	"version"			: "0.0.0",
+	"version"			: "0.1.0",
 	"license"			: "Zlib",
 
 	"description"		: "Compile hbs templates into static html files",
