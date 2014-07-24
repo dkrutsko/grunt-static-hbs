@@ -22,6 +22,7 @@ function gruntApp (grunt)
 	// Includes                                                                   //
 	//----------------------------------------------------------------------------//
 
+	var hbs   = require ("hbs"  );
 	var async = require ("async");
 	var path  = require ("path" );
 
@@ -62,11 +63,8 @@ function gruntApp (grunt)
 			// Check if value is a string
 			if (typeof value === "string")
 			{
-				var c = { };
-
 				// Auto match source to context
-				if (grunt.file.isFile (value))
-					c = setExt (value, "json");
+				var c = setExt (value, "json");
 
 				value =
 					// Convert value into an object
@@ -78,12 +76,12 @@ function gruntApp (grunt)
 				grunt.warn ("Sources must be objects or strings");
 
 			// Retrieve source and context
-			var src = value. source || "";
+			var src = value.source  || "";
 			var ctx = value.context || {};
 
-			// Expand if source is a file
-			if (grunt.file.isFile (src))
-				src = grunt.file.read (src);
+			if (value.layout)
+				// Check for a layout value
+				ctx.layout = value.layout;
 
 			// Expand if context is a file
 			if (typeof ctx === "string")
@@ -94,16 +92,21 @@ function gruntApp (grunt)
 
 				} else ctx = { };
 
-			// Verify source is a string
-			if (typeof src !== "string")
-				grunt.warn ("Source must be a path to a source or an HTML string");
-
 			// Verify context is an object
 			if (typeof ctx !== "object")
 				grunt.warn ("Context must be a path to a context or an object");
 
-			// Finish signal
-			return callback();
+			// Compile the current file
+			compile (options, src, ctx,
+				function (error, result)
+				{
+					if (!error)
+						// Write the resulting data
+						grunt.file.write (i, result);
+
+					// Finish signal
+					callback (error);
+				});
 
 		}, done);
 	});
@@ -119,38 +122,11 @@ function gruntApp (grunt)
 
 	var expand = function (options)
 	{
-		//----------------------------------------------------------------------------//
-		// Layout                                                                     //
-		//----------------------------------------------------------------------------//
-
-		// Create a layout shortcut
-		var layout = options.layout;
-
-		// Expand if layout is a file
-		if (grunt.file.isFile (layout))
-			layout = grunt.file.read (layout);
-
-		// Verify layout is a string
-		if (typeof layout !== "string")
-			grunt.warn ("Layout must be a path to a layout or an HTML string");
-
-		// Store resulting value
-		options.layout = layout;
-
-
-
-		//----------------------------------------------------------------------------//
-		// Helpers                                                                    //
-		//----------------------------------------------------------------------------//
-
-		// Create a helpers shortcut
-		var helpers = options.helpers;
-
-		// Iterate all helpers
-		for (var i in helpers)
+		// Iterate through all helpers
+		for (var i in options.helpers)
 		{
-			// Read curr value
-			var v = helpers[i];
+			// Read the current value
+			var v = options.helpers[i];
 
 			// Expand if value is a module
 			if (typeof v === "string" &&
@@ -164,24 +140,15 @@ function gruntApp (grunt)
 			if (typeof v !== "function")
 				grunt.warn ("Helpers must be a path to a module or a function");
 
-			// Store value
-			helpers[i] = v;
+			// Store current value
+			options.helpers[i] = v;
 		}
 
-
-
-		//----------------------------------------------------------------------------//
-		// Partials                                                                   //
-		//----------------------------------------------------------------------------//
-
-		// Create a partials shortcut
-		var partials = options.partials;
-
-		// Iterate all partials
-		for (var i in partials)
+		// Iterate through all partials
+		for (var i in options.partials)
 		{
-			// Read curr value
-			var v = partials[i];
+			// Read the current value
+			var v = options.partials[i];
 
 			// Expand if value is a file
 			if (grunt.file.isFile (v))
@@ -189,10 +156,10 @@ function gruntApp (grunt)
 
 			// Verify value is a string
 			if (typeof v !== "string")
-				grunt.warn ("Partials must be a path to a partial or an HTML string");
+				grunt.warn ("Partials must be a path to a partial or an html string");
 
-			// Store value
-			partials[i] = v;
+			// Store current value
+			options.partials[i] = v;
 		}
 	}
 
@@ -211,6 +178,50 @@ function gruntApp (grunt)
 
 		// Add the new extension, if any
 		return dot + (ext ? "." + ext : "");
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// Compiles the specified arguments into a static html result using hbs.
+	/// options: Includes the layout path as well as helpers and partials.
+	/// src ctx: The source path and context object to use when compiling.
+	/// callback (error, result): Function to call when compiling is done.
+
+	var compile = function (options, src, ctx, callback)
+	{
+		// Create a new hbs instance
+		var instance = hbs.create();
+
+		// Iterate and register helpers
+		for (var i in options.helpers)
+		{
+			instance.registerHelper
+				(i, options.helpers[i]);
+		}
+
+		// Iterate and register partials
+		for (var i in options.partials)
+		{
+			instance.registerPartial
+				(i, options.partials[i]);
+		}
+
+		// Add an empty settings attribute
+		ctx.settings = ctx.settings || { };
+		// Ignore the views path
+		ctx.settings.views = "";
+
+		// Select either a local or global layout
+		ctx.layout = ctx.layout || options.layout;
+
+		if (ctx.layout)
+			// Resolve layout path, if available
+			ctx.layout = path.resolve (ctx.layout);
+
+		// Resolve source path
+		src = path.resolve (src);
+
+		// Simulate an express rendering call
+		instance.__express (src, ctx, callback);
 	}
 }
 
