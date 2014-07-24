@@ -36,7 +36,8 @@
 
 	"dependencies" :
 	{
-		"hbs"			: "2.x.x"
+		"hbs"			: "2.x.x",
+		"async"			: "0.x.x"
 	},
 
 	"peerDependencies" :

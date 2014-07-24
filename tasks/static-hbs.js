@@ -22,7 +22,8 @@ function gruntApp (grunt)
 	// Includes                                                                   //
 	//----------------------------------------------------------------------------//
 
-	var path = require ("path");
+	var async = require ("async");
+	var path  = require ("path" );
 
 
 
@@ -34,6 +35,9 @@ function gruntApp (grunt)
 	"Compile hbs templates into " +
 	"static html files", function()
 	{
+		// Asynchronous signal
+		var done = this.async();
+
 		// Retrieve list of options
 		var options = this.options
 		({
@@ -44,6 +48,64 @@ function gruntApp (grunt)
 
 		// Expand options
 		expand (options);
+
+		// Retrieve the list of files
+		var files = this.data.files;
+		var k = Object.keys (files);
+
+		// Iterate all files asynchronously
+		async.each (k, function (i, callback)
+		{
+			// Read current value
+			var value = files[i];
+
+			// Check if value is a string
+			if (typeof value === "string")
+			{
+				var c = { };
+
+				// Auto match source to context
+				if (grunt.file.isFile (value))
+					c = setExt (value, "json");
+
+				value =
+					// Convert value into an object
+					{ source: value, context: c };
+			}
+
+			// Verify value is an object
+			if (typeof value !== "object")
+				grunt.warn ("Sources must be objects or strings");
+
+			// Retrieve source and context
+			var src = value. source || "";
+			var ctx = value.context || {};
+
+			// Expand if source is a file
+			if (grunt.file.isFile (src))
+				src = grunt.file.read (src);
+
+			// Expand if context is a file
+			if (typeof ctx === "string")
+				if (grunt.file.isFile (ctx))
+				{
+					ctx = JSON.parse
+						(grunt.file.read (ctx));
+
+				} else ctx = { };
+
+			// Verify source is a string
+			if (typeof src !== "string")
+				grunt.warn ("Source must be a path to a source or an HTML string");
+
+			// Verify context is an object
+			if (typeof ctx !== "object")
+				grunt.warn ("Context must be a path to a context or an object");
+
+			// Finish signal
+			return callback();
+
+		}, done);
 	});
 
 
@@ -132,6 +194,23 @@ function gruntApp (grunt)
 			// Store value
 			partials[i] = v;
 		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// Replaces the file extension of file with ext and returns the result.
+	/// If ext is unspecified, the file extension is instead simply removed.
+
+	var setExt = function (file, ext)
+	{
+		// Retrieve the last dot index
+		var dot = file.lastIndexOf (".");
+
+		dot = (dot >= 0) ?
+			// Strip the file extension
+			file.substr (0, dot) : file;
+
+		// Add the new extension, if any
+		return dot + (ext ? "." + ext : "");
 	}
 }
 
