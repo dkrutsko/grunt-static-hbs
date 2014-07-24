@@ -19,6 +19,14 @@
 function gruntApp (grunt)
 {
 	//----------------------------------------------------------------------------//
+	// Includes                                                                   //
+	//----------------------------------------------------------------------------//
+
+	var path = require ("path");
+
+
+
+	//----------------------------------------------------------------------------//
 	// Grunt Main                                                                 //
 	//----------------------------------------------------------------------------//
 
@@ -26,7 +34,105 @@ function gruntApp (grunt)
 	"Compile hbs templates into " +
 	"static html files", function()
 	{
+		// Retrieve list of options
+		var options = this.options
+		({
+			layout   : "",
+			helpers  : { },
+			partials : { }
+		});
+
+		// Expand options
+		expand (options);
 	});
+
+
+
+	//----------------------------------------------------------------------------//
+	// Functions                                                                  //
+	//----------------------------------------------------------------------------//
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// Expands and verifies the specified options. Options are passed by reference.
+
+	var expand = function (options)
+	{
+		//----------------------------------------------------------------------------//
+		// Layout                                                                     //
+		//----------------------------------------------------------------------------//
+
+		// Create a layout shortcut
+		var layout = options.layout;
+
+		// Expand if layout is a file
+		if (grunt.file.isFile (layout))
+			layout = grunt.file.read (layout);
+
+		// Verify layout is a string
+		if (typeof layout !== "string")
+			grunt.warn ("Layout must be a path to a layout or an HTML string");
+
+		// Store resulting value
+		options.layout = layout;
+
+
+
+		//----------------------------------------------------------------------------//
+		// Helpers                                                                    //
+		//----------------------------------------------------------------------------//
+
+		// Create a helpers shortcut
+		var helpers = options.helpers;
+
+		// Iterate all helpers
+		for (var i in helpers)
+		{
+			// Read curr value
+			var v = helpers[i];
+
+			// Expand if value is a module
+			if (typeof v === "string" &&
+				grunt.file.isFile (v))
+			{
+				v = require
+					(path.resolve (v));
+			}
+
+			// Verify value is a function
+			if (typeof v !== "function")
+				grunt.warn ("Helpers must be a path to a module or a function");
+
+			// Store value
+			helpers[i] = v;
+		}
+
+
+
+		//----------------------------------------------------------------------------//
+		// Partials                                                                   //
+		//----------------------------------------------------------------------------//
+
+		// Create a partials shortcut
+		var partials = options.partials;
+
+		// Iterate all partials
+		for (var i in partials)
+		{
+			// Read curr value
+			var v = partials[i];
+
+			// Expand if value is a file
+			if (grunt.file.isFile (v))
+				v = grunt.file.read (v);
+
+			// Verify value is a string
+			if (typeof v !== "string")
+				grunt.warn ("Partials must be a path to a partial or an HTML string");
+
+			// Store value
+			partials[i] = v;
+		}
+	}
 }
 
 
