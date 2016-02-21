@@ -1,52 +1,37 @@
 {
-	"name"				: "grunt-static-hbs",
-	"version"			: "0.1.0",
-	"license"			: "Zlib",
-
-	"description"		: "Compile hbs templates into static html files",
-
-	"contributors" :
-	[
+	"name": "grunt-static-hbs",
+	"version": "0.1.0",
+	"license": "Zlib",
+	"description": "Compile hbs templates into static html files",
+	"contributors": [
 		{
-			"name"		: "David Krutsko",
-			"email"		: "dave@krutsko.net",
-			"url"		: "dave.krutsko.net"
+			"name": "David Krutsko",
+			"email": "dave@krutsko.net",
+			"url": "dave.krutsko.net"
 		}
 	],
-
-	"repository" :
-	{
-		"type"			: "git",
-		"url"			: "https://github.com/dkrutsko/grunt-static-hbs.git"
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/dkrutsko/grunt-static-hbs.git"
 	},
-
-	"bugs" :
-	{
-		"url"			: "https://github.com/dkrutsko/grunt-static-hbs/issues"
+	"bugs": {
+		"url": "https://github.com/dkrutsko/grunt-static-hbs/issues"
 	},
-
-	"keywords" :
-	[
+	"keywords": [
 		"handlebars",
 		"html",
 		"template",
 		"compiler",
 		"gruntplugin"
 	],
-
-	"dependencies" :
-	{
-		"hbs"			: "2.x.x",
-		"async"			: "0.x.x"
+	"dependencies": {
+		"hbs": "2.x.x",
+		"async": "0.x.x"
 	},
-
-	"peerDependencies" :
-	{
-		"grunt"			: "0.4.x"
+	"peerDependencies": {
+		"grunt": ">=0.4.0"
 	},
-
-	"engines" :
-	{
-		"node"			: ">= 0.10.0"
+	"engines": {
+		"node": ">= 0.10.0"
 	}
 }
