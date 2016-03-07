@@ -1,11 +1,10 @@
 # Static HBS
-[![Build Status](https://travis-ci.org/dkrutsko/grunt-static-hbs.png)](https://travis-ci.org/dkrutsko/grunt-static-hbs)
 [![NPM version](https://badge.fury.io/js/grunt-static-hbs.png)](https://badge.fury.io/js/grunt-static-hbs)
 
 <p align="justify">A simple plugin for <a href="http://gruntjs.com">Grunt</a> which compiles <a href="http://handlebarsjs.com">handlebars</a> templates into static html files. It works by using <a href="https://github.com/donpark/hbs">hbs</a> to compile and render the templates, allowing us to seamlessly transition from using <a href="https://github.com/visionmedia/express">express</a> to using Grunt. By using hbs, we get the advantage of having both the power of handlebars and the power of hbs specific extensions. Because hbs is an express library, this plugin simulates an express rendering call on each of the files in order to compile the templates.</p>
 
 ### Installation
-<p align="justify">This plugin requires <a href="http://gruntjs.com">Grunt</a> 0.4.x which uses <a href="http://nodejs.org">Node.js</a>. If you haven't used Grunt before, be sure to check out the <a href="http://gruntjs.com/getting-started">Getting Started</a> guide, as it explains how to create a <a href="http://gruntjs.com/sample-gruntfile">Gruntfile</a> as well as install and use Grunt plugins. Once you're familiar with this process you may install this plugin using the following command:</p>
+<p align="justify">This plugin requires <a href="http://gruntjs.com">Grunt</a> which uses <a href="http://nodejs.org">Node.js</a>. If you haven't used Grunt before, be sure to check out the <a href="http://gruntjs.com/getting-started">Getting Started</a> guide, as it explains how to create a <a href="http://gruntjs.com/sample-gruntfile">Gruntfile</a> as well as install and use Grunt plugins. Once you're familiar with this process you may install this plugin using the following command:</p>
 
 ```shell
 $ npm install grunt-static-hbs

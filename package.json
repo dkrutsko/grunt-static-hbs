@@ -1,18 +1,16 @@
 {
 	"name"				: "grunt-static-hbs",
-	"version"			: "0.1.0",
+	"version"			: "0.2.0",
 	"license"			: "Zlib",
 
 	"description"		: "Compile hbs templates into static html files",
 
-	"contributors" :
-	[
-		{
-			"name"		: "David Krutsko",
-			"email"		: "dave@krutsko.net",
-			"url"		: "dave.krutsko.net"
-		}
-	],
+	"author" :
+	{
+		"name"			: "David Krutsko",
+		"email"			: "dave@krutsko.net",
+		"url"			: "http://krutsko.net"
+	},
 
 	"repository" :
 	{
@@ -36,13 +34,13 @@
 
 	"dependencies" :
 	{
-		"hbs"			: "2.x.x",
-		"async"			: "0.x.x"
+		"hbs"			: "4.0.x",
+		"async"			: "1.5.x"
 	},
 
 	"peerDependencies" :
 	{
-		"grunt"			: "0.4.x"
+		"grunt"			: ">= 0.4.0"
 	},
 
 	"engines" :
